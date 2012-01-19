@@ -2,14 +2,12 @@ if config['database']
   say_wizard "Configuring '#{config['database']}' database settings..."
   old_gem = gem_for_database
   @options = @options.dup.merge(:database => config['database'])
-
-  # SQLite3 gem requires special treatment.
-  gem_string = case gem_for_database
-  when "sqlite3"; "gem 'sqlite3-ruby', :require => 'sqlite3'"
-  when "mysql2"; "gem 'mysql2', '~> 0.2.6'"
-  else "gem '#{gem_for_database}'"
+  gsub_file 'Gemfile', "gem '#{old_gem}'", "gem '#{gem_for_database}'"
+  if config['database'] == 'mysql'
+    if recipes.include? 'rails 3.0'
+      gsub_file 'Gemfile', "gem 'mysql2'", "gem 'mysql2', '<= 0.3.0'"
+    end
   end
-  gsub_file 'Gemfile', Regexp.new("gem '#{old_gem}'(, '[^']*')?(, :require => '[^']*')?"), gem_string
 
   template "config/databases/#{@options[:database]}.yml", "config/database.yml.new"
   run 'mv config/database.yml.new config/database.yml'
