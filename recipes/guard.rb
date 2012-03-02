@@ -1,7 +1,29 @@
-if config['guard']
+case config['guard']
+  when 'no'
+    recipes.delete('guard')
+    say_wizard "Guard recipe skipped."
+  when 'standard'
+    # do nothing
+  when 'LiveReload'
+    recipes << 'guard-LiveReload'
+  else
+    recipes.delete('guard')
+    say_wizard "Guard recipe skipped."
+end
+
+
+if recipes.include? 'guard'
   gem 'guard', '>= 0.6.2', :group => :development
-  
+
+  prepend_file 'Gemfile' do <<-RUBY
+require 'rbconfig'
+HOST_OS = RbConfig::CONFIG['host_os']
+
+RUBY
+  end
+
   append_file 'Gemfile' do <<-RUBY
+  # need newline here!
 case HOST_OS
   when /darwin/i
     gem 'rb-fsevent', :group => :development
@@ -24,29 +46,29 @@ end
   def guard(name, version = nil)
     args = []
     if version
-      args << version 
+      args << version
     end
     args << { :group => :development }
     gem "guard-#{name}", *args
     guards << name
   end
 
-  guard 'bundler', '>= 0.1.3' 
+  guard 'bundler', '>= 0.1.3'
 
-  unless recipes.include? 'pow' 
-    guard 'rails', '>= 0.0.3' 
+  unless recipes.include? 'pow'
+    guard 'rails', '>= 0.0.3'
   end
-
-  if config['livereload']
+  
+  if recipes.include? 'guard-LiveReload'
     guard 'livereload', '>= 0.3.0'
   end
 
-  if recipes.include? 'rspec' 
-    guard 'rspec', '>= 0.4.3' 
+  if recipes.include? 'rspec'
+    guard 'rspec', '>= 0.4.3'
   end
 
-  if recipes.include? 'cucumber' 
-    guard 'cucumber', '>= 0.6.1' 
+  if recipes.include? 'cucumber'
+    guard 'cucumber', '>= 0.6.1'
   end
 
   after_bundler do
@@ -57,7 +79,7 @@ end
   end
 
 else
-  recipes.delete 'guard' 
+  recipes.delete 'guard'
 end
 
 __END__
@@ -72,8 +94,6 @@ tags: [dev]
 
 config:
   - guard:
-      type: boolean
+      type: multiple_choice
       prompt: Would you like to use Guard to automate your workflow?
-  - livereload:
-      type: boolean
-      prompt: Would you like to enable the LiveReload guard?
+      choices: [["No", no], ["Guard default configuration", standard], ["Guard with LiveReload", LiveReload]]

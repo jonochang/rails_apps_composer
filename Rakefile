@@ -31,8 +31,8 @@ task :run => :clean do
     Dir.chdir(dir) do
       file = File.open('template.rb', 'w')
       file.write template.compile
-      file.close  
-    
+      file.close
+
       system "rails new test_run -m template.rb #{template.args.join(' ')}"
 
       puts "\n\n cd #{dir} # look at the app"

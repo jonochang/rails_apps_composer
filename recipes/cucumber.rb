@@ -2,19 +2,10 @@
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/cucumber.rb
 
 if config['cucumber']
-  if recipes.include? 'rails 3.0'
-    # for Rails 3.0, use only gem versions we know that work
-    gem 'cucumber-rails', '0.5.1', :group => :test
-    gem 'capybara', '1.0.0', :group => :test
-    gem 'database_cleaner', '0.6.7', :group => :test
-    gem 'launchy', '0.4.0', :group => :test
-  else
-    # for Rails 3.1+, use optimistic versioning for gems
-    gem 'cucumber-rails', '>= 1.2.0', :group => :test
-    gem 'capybara', '>= 1.1.2', :group => :test
-    gem 'database_cleaner', '>= 0.7.0', :group => :test
-    gem 'launchy', '>= 2.0.5', :group => :test
-  end
+  gem 'cucumber-rails', '>= 1.3.0', :group => :test
+  gem 'capybara', '>= 1.1.2', :group => :test
+  gem 'database_cleaner', '>= 0.7.1', :group => :test
+  gem 'launchy', '>= 2.0.5', :group => :test
 else
   recipes.delete('cucumber')
 end
@@ -23,6 +14,8 @@ if config['cucumber']
   after_bundler do
     say_wizard "Cucumber recipe running 'after bundler'"
     generate "cucumber:install --capybara#{' --rspec' if recipes.include?('rspec')}#{' -D' if recipes.include?('mongoid')}"
+    # make it easy to run Cucumber for single features without adding "--require features" to the command line
+    gsub_file 'config/cucumber.yml', /std_opts = "/, 'std_opts = "-r features/support/ -r features/step_definitions '
     if recipes.include? 'mongoid'
       gsub_file 'features/support/env.rb', /transaction/, "truncation"
       inject_into_file 'features/support/env.rb', :after => 'begin' do
@@ -46,10 +39,23 @@ if config['cucumber']
         get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/features/step_definitions/user_steps.rb', 'features/step_definitions/user_steps.rb'
         remove_file 'features/support/paths.rb'
         get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/features/support/paths.rb', 'features/support/paths.rb'
+        if recipes.include? 'devise-confirmable'
+          gsub_file 'features/step_definitions/user_steps.rb', /Welcome! You have signed up successfully./, "A message with a confirmation link has been sent to your email address."
+          inject_into_file 'features/users/sign_in.feature', :before => '    Scenario: User signs in successfully' do
+<<-RUBY
+    Scenario: User has not confirmed account
+      Given I exist as an unconfirmed user
+      And I am not logged in
+      When I sign in with valid credentials
+      Then I see an unconfirmed account message
+      And I should be signed out
+RUBY
+          end
+        end
       rescue OpenURI::HTTPError
         say_wizard "Unable to obtain Cucumber example files from the repo"
       end
-    end
+    end 
   end
 end
 

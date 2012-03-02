@@ -2,34 +2,24 @@
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/rspec.rb
 
 if config['rspec']
-  if recipes.include? 'rails 3.0'
-    # for Rails 3.0, use only gem versions we know that work
-    say_wizard "REMINDER: When creating a Rails app using RSpec..."
-    say_wizard "you should add the '-T' flag to 'rails new'"
-    gem 'rspec-rails', '2.6.1', :group => [:development, :test]
-    if recipes.include? 'mongoid'
-      # use the database_cleaner gem to reset the test database
-      gem 'database_cleaner', '0.6.7', :group => :test
-      # include RSpec matchers from the mongoid-rspec gem
-      gem 'mongoid-rspec', '1.4.2', :group => :test
-    end
-    if config['factory_girl']
-      # use the factory_girl gem for test fixtures
-      gem 'factory_girl_rails', '1.1.beta1', :group => :test
-    end
-  else
-    # for Rails 3.1+, use optimistic versioning for gems
-    gem 'rspec-rails', '>= 2.8.0.rc1', :group => [:development, :test]
-    if recipes.include? 'mongoid'
-      # use the database_cleaner gem to reset the test database
-      gem 'database_cleaner', '>= 0.7.0', :group => :test
-      # include RSpec matchers from the mongoid-rspec gem
-      gem 'mongoid-rspec', '>= 1.4.4', :group => :test
-    end
-    if config['factory_girl']
-      # use the factory_girl gem for test fixtures
-      gem 'factory_girl_rails', '>= 1.4.0', :group => :test
-    end
+  gem 'rspec-rails', '>= 2.8.1', :group => [:development, :test]
+  if recipes.include? 'mongoid'
+    # use the database_cleaner gem to reset the test database
+    gem 'database_cleaner', '>= 0.7.1', :group => :test
+    # include RSpec matchers from the mongoid-rspec gem
+    gem 'mongoid-rspec', '>= 1.4.4', :group => :test
+  end
+  if config['machinist']
+    gem 'machinist', :group => :test
+  end
+  if config['factory_girl']
+    gem 'factory_girl_rails', '>= 1.7.0', :group => :test
+  end
+  # add a collection of RSpec matchers and Cucumber steps to make testing email easy
+  gem 'email_spec', '>= 1.2.1', :group => :test
+  create_file 'features/support/email_spec.rb' do <<-RUBY
+require 'email_spec/cucumber'
+RUBY
   end
 else
   recipes.delete('rspec')
@@ -41,6 +31,17 @@ if config['rspec']
   after_bundler do
     say_wizard "RSpec recipe running 'after bundler'"
     generate 'rspec:install'
+    generate 'email_spec:steps'
+    inject_into_file 'spec/spec_helper.rb', "require 'email_spec'\n", :after => "require 'rspec/rails'\n"
+    inject_into_file 'spec/spec_helper.rb', :after => "RSpec.configure do |config|\n" do <<-RUBY
+  config.include(EmailSpec::Helpers)
+  config.include(EmailSpec::Matchers)
+RUBY
+    end
+    if config['machinist']
+      say_wizard "Generating blueprints file for Machinist"
+      generate 'machinist:install'
+    end
 
     say_wizard "Removing test folder (not needed for RSpec)"
     run 'rm -rf test/'
@@ -51,6 +52,7 @@ if config['rspec']
     config.generators do |g|
       g.view_specs false
       g.helper_specs false
+      #{"g.fixture_replacement :machinist" if config['machinist']}
     end
 
 RUBY
@@ -85,7 +87,7 @@ RUBY
       gsub_file 'config/application.rb', /require "rails\/test_unit\/railtie"/, '# require "rails/test_unit/railtie"'
 
       # configure RSpec to use matchers from the mongoid-rspec gem
-      create_file 'spec/support/mongoid.rb' do 
+      create_file 'spec/support/mongoid.rb' do
       <<-RUBY
 RSpec.configure do |config|
   config.include Mongoid::Matchers
@@ -96,7 +98,7 @@ RUBY
 
     if recipes.include? 'devise'
       # add Devise test helpers
-      create_file 'spec/support/devise.rb' do 
+      create_file 'spec/support/devise.rb' do
       <<-RUBY
 RSpec.configure do |config|
   config.include Devise::TestHelpers, :type => :controller
@@ -126,3 +128,6 @@ config:
   - factory_girl:
       type: boolean
       prompt: Would you like to use factory_girl for test fixtures with RSpec?
+  - machinist:
+      type: boolean
+      prompt: Would you like to use machinist for test fixtures with RSpec?

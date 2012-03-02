@@ -6,10 +6,18 @@ after_bundler do
 
   say_wizard "SeedDatabase recipe running 'after bundler'"
 
-  unless recipes.include? 'mongoid'
-    run 'bundle exec rake db:migrate'
-  end
+  run 'bundle exec rake db:migrate' unless recipes.include? 'mongoid'
 
+  if recipes.include? 'devise-invitable'
+    generate 'devise_invitable user'
+    unless recipes.include? 'mongoid'
+      run 'bundle exec rake db:migrate'
+    end
+  end
+  
+  # clone the schema changes to the test database
+  run 'bundle exec rake db:test:prepare' unless recipes.include? 'mongoid'
+  
   if recipes.include? 'mongoid'
     append_file 'db/seeds.rb' do <<-FILE
 puts 'EMPTY THE MONGODB DATABASE'
@@ -25,6 +33,9 @@ puts 'SETTING UP DEFAULT USER LOGIN'
 user = User.create! :name => 'First User', :email => 'user@example.com', :password => 'please', :password_confirmation => 'please'
 puts 'New user created: ' << user.name
 FILE
+    end
+    if recipes.include? 'devise-confirmable'
+      gsub_file 'db/seeds.rb', /:password_confirmation => 'please'/, ":password_confirmation => 'please', :confirmed_at => DateTime.now"
     end
   end
 

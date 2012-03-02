@@ -1,26 +1,33 @@
 # Application template recipe for the rails_apps_composer. Check for a newer version here:
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/devise.rb
 
-if config['devise']
-  if recipes.include? 'rails 3.0'
-    # for Rails 3.0, use only gem versions we know that work
-    gem 'devise', '1.3.4'
+case config['devise']
+  when 'no'
+    recipes.delete('devise')
+    say_wizard "Devise recipe skipped."
+  when 'standard'
+    gem 'devise', '>= 2.0.4'
+  when 'confirmable'
+    gem 'devise', '>= 2.0.4'
+    recipes << 'devise-confirmable'
+  when 'invitable'
+    gem 'devise', '>= 2.0.4'
+    gem 'devise_invitable', '>= 1.0.0'
+    recipes << 'devise-confirmable'
+    recipes << 'devise-invitable'
   else
-    # for Rails 3.1+, use optimistic versioning for gems
-    gem 'devise', '>= 1.5.0'
-  end
-else
-  recipes.delete('devise')
+    recipes.delete('devise')
+    say_wizard "Devise recipe skipped."
 end
 
-
-if config['devise']
+if recipes.include? 'devise'
   after_bundler do
-    
+
     say_wizard "Devise recipe running 'after bundler'"
-    
+
     # Run the Devise generator
     generate 'devise:install'
+    generate 'devise_invitable:install' if recipes.include? 'devise-invitable'
 
     if recipes.include? 'mongo_mapper'
       gem 'mm-devise'
@@ -39,7 +46,7 @@ if config['devise']
       # (see https://github.com/RailsApps/rails3-devise-rspec-cucumber/issues/3)
       gsub_file 'config/initializers/devise.rb', 'config.sign_out_via = :delete', 'config.sign_out_via = Rails.env.test? ? :get : :delete'
     end
-    
+
   end
 
   after_everything do
@@ -51,6 +58,7 @@ if config['devise']
       begin
         # copy all the RSpec specs files from the rails3-devise-rspec-cucumber example app
         get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/spec/factories.rb', 'spec/factories.rb'
+        gsub_file 'spec/factories.rb', /# confirmed_at/, "confirmed_at" if recipes.include? 'devise-confirmable'
         remove_file 'spec/controllers/home_controller_spec.rb'
         remove_file 'spec/controllers/users_controller_spec.rb'
         get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/spec/controllers/home_controller_spec.rb', 'spec/controllers/home_controller_spec.rb'
@@ -82,5 +90,6 @@ exclusive: authentication
 
 config:
   - devise:
-      type: boolean
+      type: multiple_choice
       prompt: Would you like to use Devise for authentication?
+      choices: [["No", no], ["Devise with default modules", standard], ["Devise with Confirmable module", confirmable], ["Devise with Confirmable and Invitable modules", invitable]]

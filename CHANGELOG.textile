@@ -1,12 +1,97 @@
 h1. CHANGELOG
 
-h2. 1.0.27  unreleased
+h2. 1.1.6 February 28, 2012
+
+* update 'devise' recipe to accommmodate RSpec and Cucumber for Devise 'confirmable' option
+
+h2. 1.1.5 February 26, 2012
+
+* update 'action_mailer' recipe to configure test environment
+* update 'action_mailer' recipe to configure ActionMailer to send email using a GMail account
+* update 'devise' recipe with 'confirmable' and 'invitable' options (with a Cucumber scenario)
+* change prompt for 'guard' recipe
+* update 'seed_database' recipe to add 'rake db:test:prepare'
+* remove 'add_user_name' recipe (replaced by 'add_user' recipe)
+* update 'cucumber' recipe to run single features without adding "--require features" to the command line
+
+h2. 1.1.4 February 21, 2012
+
+* add a 'bundle update' after 'bundle install'
+* fix 'email_spec' configuration in 'rspec' recipe
+* fix typo for machinist in 'rspec' recipe
+* avoid deprecation warning with Devise 2.0 for old 'devise/shared/_links.erb' partial
+
+h2. 1.1.3 February 21, 2012
+
+* add 'email_spec' gem to 'rspec' recipe
+* update gem 'cucumber-rails' from 1.2.1 to 1.3.0
+* update gem 'factory_girl_rails' from 1.6.0 to 1.7.0
+* update gem 'devise' from 2.0.0 to 2.0.4
+* update gem 'mongoid' from 2.4.3 to 2.4.4
+* update gem 'bson_ext' from 1.3.1 to 1.5.2
+* update gem 'rails-backbone' from 0.6.1 to 0.7.0
+* update gem 'compass' from 0.12.alpha.4 to 0.12.rc.1
+* update gem 'bootstrap-sass' from 2.0.0 to 2.0.1
+* fix typo for machinist in 'rspec' recipe
+
+h2. 1.1.2 February 12, 2012
+
+* fix Twitter Bootstrap in the 'html5' recipe
+* warn that 'rails-footnotes' is SLOW in the 'extras' recipe
+
+h2. 1.1.1 February 4, 2012
+
+* bugfix in 'rspec' recipe: call machinist:install generator
+* require 'rake' in the gemspec file to avoid 'could not find rake' failures
+
+h2. 1.1.0 January 28, 2012
+
+* remove support for Rails 3.0 (require Rails 3.1 or newer)
+* remove 'application_layout' recipe (use html5 recipe instead)
+* remove 'jquery' recipe (jQuery installed by default for Rails 3.1)
+* remove 'draggable' recipe (not maintained)
+* remove 'env_yaml' recipe (not maintained)
+* remove 'jammit' recipe (not maintained)
+* remove 'mongo_mapper' recipe (not maintained)
+* remove 'mootools' recipe (not maintained)
+* remove 'pow' recipe (not maintained)
+* remove 'prototype' recipe (not maintained)
+* remove 'redis' recipe (not maintained)
+* remove 'redistogo' recipe (not maintained)
+* remove 'rightjs' recipe (not maintained)
+* remove 'sequel' recipe (not maintained)
+* remove 'slim' recipe (not maintained)
+* remove 'test_unit' recipe (not maintained)
+* incorporate 'ban_spiders' recipe in 'extras' recipe
+* update gem 'rails-backbone' from 0.5.3 to 0.6.1
+* update gem 'compass' from 0.12.alpha.0 to 0.12.alpha.4
+* update gem 'cucumber-rails' from 1.2.0 to 1.2.1
+* update gem 'database_cleaner' from 0.7.0 to 0.7.1
+* update gem 'devise' from 1.5.0 to 2.0.0
+* update gem 'haml' from 3.1.2 to 3.1.4
+* update gem 'mongoid' from 2.3.3 to 2.4.3
+* update gem 'omniauth' from 1.0.0 to 1.0.2
+* update gem 'rspec-rails' from 2.8.0.rc1 to 2.8.1
+* update gem 'factory_girl_rails' from 1.4.0 to 1.6.0
+* update gem 'sass' from 3.1.6 to 3.1.12
+* bugfix in 'omniauth' recipe: eliminate 'other' as a provider choice
+* add MongoLab recipe based on MongoHQ recipe (contributed by Leo Lou)
+
+h2. 1.0.28 unreleased
+
+* remove code that adds a Javascript runtime to the Gemfile for Linux users
+* 'compass' recipe => fix typo (TMorgan99)
+* 'guard' recipe => gets missing newline in Gemfile.append for case OS (TMorgan99)
+* 'heroku' recipe => declares gem 'heroku' (TMorgan99)
+* 'rspec' recipe => adds support for machinist (TMorgan99)
+
+h2. 1.0.27 unreleased
 
 * switch from 'twitter-bootstrap-rails' to 'bootstrap-sass'
 * 'application.css' renamed as 'application.css.scss'
 * update gem 'factory_girl_rails' from 1.3.0 to 1.4.0
 
-h2. 1.0.26  November 17, 2011
+h2. 1.0.26 November 17, 2011
 
 * improve logic for displaying navigation in subdomains recipe
 * update gem 'capybara' from 1.1.1 to 1.1.2
