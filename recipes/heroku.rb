@@ -3,11 +3,15 @@ heroku_name = app_name.gsub('_','')
 gem 'heroku', group: :development
 
 after_everything do
+  
+  stack = config["stack"]
+  puts "deploying to heroku stack: #{stack}"
+
   if config['create']
-    say_wizard "Creating Heroku app '#{heroku_name}.heroku.com'"
+    say_wizard "Creating Heroku app '#{heroku_name}.heroku.com' on #{stack}"
     # system "heroku apps:destroy --app #{heroku_name} --confirm #{heroku_name}"
 
-    while !system("heroku create #{heroku_name}")
+    while !system("heroku create #{heroku_name} --stack #{stack}")
       heroku_name = ask_wizard("What do you want to call your app? ")
     end
   end
@@ -15,7 +19,7 @@ after_everything do
   if config['staging']
     staging_name = "#{heroku_name}-staging"
     say_wizard "Creating staging Heroku app '#{staging_name}.heroku.com'"
-    while !system("heroku create #{staging_name}")
+    while !system("heroku create #{staging_name} --stack #{stack}")
       staging_name = ask_wizard("What do you want to call your staging app?")
     end
     git :remote => "rm heroku"
@@ -52,6 +56,14 @@ config:
       prompt: "Create staging app? (appname-staging.heroku.com)"
       type: boolean
       if: create
+  - stack:
+      prompt: "Which stack do you want to use?"
+      type: multiple_choice
+      choices:
+       - ["aspen-mri-1.8.6", "aspen-mri-1.8.6"]
+       - ["bamboo-ree-1.8.7", "bamboo-ree-1.8.7"]
+       - ["bamboo-mri-1.9.2", "bamboo-mri-1.9.2"]
+       - ["cedar", "cedar"]
   - domain:
       prompt: "Specify custom domain (or leave blank):"
       type: string
