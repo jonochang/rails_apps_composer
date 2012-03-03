@@ -2,7 +2,7 @@ if config['compass']
   gem 'compass', :version => '~> 0.12.rc.1'
   after_bundler do
     remove_file 'app/assets/stylesheets/application.css'
-    create_file 'app/assets/stylesheets/application.css.sass' do <<-SASS
+    create_file 'app/assets/stylesheets/application.css.scss' do <<-SASS
 //= require_self
 //= require_tree .
 
