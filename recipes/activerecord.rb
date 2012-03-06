@@ -24,10 +24,10 @@ after_bundler do
   
   if config['populate_rake_task']
     populate_rake = <<-RB
-require './config/environment'
 namespace :db do
   desc "Populate the database with sample data"
   task :populate do
+    require './config/environment'
   end
 end
 RB
