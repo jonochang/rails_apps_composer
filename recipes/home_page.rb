@@ -21,6 +21,8 @@ after_bundler do
 %h3 Home
 HAML
     end
+  elsif recipes.include? 'slim'
+    # skip
   else
     remove_file 'app/views/home/index.html.erb'
     create_file 'app/views/home/index.html.erb' do 
@@ -32,6 +34,17 @@ ERB
 
   # set routes
   gsub_file 'config/routes.rb', /get \"home\/index\"/, 'root :to => "home#index"'
+
+  if recipes.include? 'devise'
+    inject_into_file 'config/routes.rb', :before => "  root :to" do 
+    <<-RUBY
+  authenticated :user do
+    root :to => 'home#index'
+  end
+\n  
+RUBY
+    end
+  end
 
 end
 

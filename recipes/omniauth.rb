@@ -2,7 +2,7 @@
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/omniauth.rb
 
 if config['omniauth']
-  gem 'omniauth', '>= 1.0.2'
+  gem 'omniauth', '>= 1.1.0'
   # for available gems, see https://github.com/intridea/omniauth/wiki/List-of-Strategies
   case config['provider']
     when 'twitter'
@@ -13,6 +13,10 @@ if config['omniauth']
      gem 'omniauth-github'
     when 'linkedin'
       gem 'omniauth-linkedin'
+    when 'google'
+      gem 'omniauth-google'
+    when 'tumblr'
+      gem 'omniauth-tumblr'
   end
 else
   recipes.delete('omniauth')
@@ -21,6 +25,8 @@ end
 if config['omniauth']
   after_bundler do
 
+    say_wizard "OmniAuth recipe running 'after bundler'"
+  
     # Don't use single-quote-style-heredoc: we want interpolation.
     create_file 'config/initializers/omniauth.rb' do <<-RUBY
 Rails.application.config.middleware.use OmniAuth::Builder do
@@ -134,6 +140,37 @@ RUBY
     end
 
   end
+
+  after_everything do
+
+    say_wizard "OmniAuth recipe running 'after everything'"
+
+    if recipes.include? 'rspec'
+      say_wizard "Copying RSpec files from the rails3-mongoid-omniauth examples"
+      begin
+        # copy all the RSpec specs files from the rails3-mongoid-omniauth example app
+        # spec_helper
+        remove_file 'spec/spec_helper.rb'
+        get 'https://raw.github.com/RailsApps/rails3-mongoid-omniauth/master/spec/spec_helper.rb', 'spec/spec_helper.rb'
+        # factories
+        remove_file 'spec/factories/users.rb'
+        get 'https://raw.github.com/RailsApps/rails3-mongoid-omniauth/master/spec/factories/users.rb', 'spec/factories/users.rb'
+        # controllers
+        get 'https://raw.github.com/RailsApps/rails3-mongoid-omniauth/master/spec/controllers/sessions_controller_spec.rb', 'spec/controllers/sessions_controller_spec.rb'
+        remove_file 'spec/controllers/home_controller_spec.rb'
+        remove_file 'spec/controllers/users_controller_spec.rb'
+        get 'https://raw.github.com/RailsApps/rails3-mongoid-omniauth/master/spec/controllers/home_controller_spec.rb', 'spec/controllers/home_controller_spec.rb'
+        get 'https://raw.github.com/RailsApps/rails3-mongoid-omniauth/master/spec/controllers/users_controller_spec.rb', 'spec/controllers/users_controller_spec.rb'
+        # models
+        remove_file 'spec/models/user_spec.rb'
+        get 'https://raw.github.com/RailsApps/rails3-mongoid-omniauth/master/spec/models/user_spec.rb', 'spec/models/user_spec.rb'
+      rescue OpenURI::HTTPError
+        say_wizard "Unable to obtain RSpec example files from the repo"
+      end
+    end
+    
+  end
+
 end
 
 __END__
@@ -152,4 +189,4 @@ config:
   - provider:
       type: multiple_choice
       prompt: "Which service provider will you use?"
-      choices: [["Twitter", twitter], ["Facebook", facebook], ["GitHub", github], ["LinkedIn", linkedin]]
+      choices: [["Twitter", twitter], ["Facebook", facebook], ["GitHub", github], ["LinkedIn", linkedin], ["Google", google], ["Tumblr", tumblr]]

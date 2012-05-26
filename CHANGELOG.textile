@@ -1,5 +1,160 @@
 h1. CHANGELOG
 
+h2. 1.5.0 May 21, 2012
+
+* New "defaults" option to specify recipes and preferences (contributed by Bryan Stearns)
+* revised README
+
+h2. 1.4.14 May 20, 2012
+
+* update 'add_user' recipe to rename folders used for Devise Haml views
+* minor update to 'action_mailer' recipe for "Mandrill by MailChimp" option
+
+h2. 1.4.13 May 19, 2012
+
+* update 'action_mailer' recipe to add "Mandrill by MailChimp" option
+
+h2. 1.4.12 May 17, 2012
+
+* update 'action_mailer' recipe to allow choice of sending email via SMTP, Gmail, or SendGrid accounts
+* update gem 'bootstrap-sass' from 2.0.1 to 2.0.3
+* remove 'add_user' patch for https://github.com/RailsApps/rails3-application-templates/issues/35
+* update gem 'haml' from 3.1.5 to 3.1.6
+* update gem 'devise' from 2.1.0.rc2 to 2.1.0
+
+h2. 1.4.11 May 13, 2012
+
+* fix 'add_user' recipe to add patch for https://github.com/RailsApps/rails3-application-templates/issues/35
+* update 'omniauth' recipe to add RSpec tests (contributed by Taylor Mock)
+* update gem 'mongoid' from 2.4.9 to 2.4.10
+* update gem 'factory_girl_rails' from 3.2.0 to 3.3.0
+
+h2. 1.4.10 May 11, 2012
+
+* fix 'subdomains' recipe to accommodate recent changes
+* fix 'omniauth_email' recipe to redirect if user's email is blank (contributed by Taylor Mock)
+
+h2. 1.4.9 May 11, 2012
+
+* add 'responders' recipe (contributed by allen13)
+* fix 'html5' recipe so Twitter Bootstrap icons will be available with 'bootstrap_sass' option
+* fix 'cucumber' recipe to add ':require => false' and avoid warning message
+* fix 'active_admin' recipe to correct typo for activeadmin-mongoid gem (contributed by Alex Kravets)
+* fix 'users_page' recipe to force it to run after 'add_user' recipe
+* fix 'add_user' recipe to remove a uniqueness constraint when Mongoid is used (contributed by nrser)
+* fix 'add_user' recipe to remove superfluous 'attr_accessible' comment
+* fix 'add_user' recipe to accommodate mongoid when Devise invitable module is used
+* update gem 'devise' from 2.1.0.rc to 2.1.0.rc2
+* update gem 'haml' from 3.1.4 to 3.1.5
+* update gem 'rspec-rails' from 2.9.0.rc2 to 2.10.1
+
+h2. 1.4.8 April 26, 2012
+
+* improve 'extras' recipe to offer to install gem 'therubyracer' for Linux users without node.js
+* fix 'html5' recipe to add gem 'therubyracer' for 'Bootstrap with Less' option
+
+h2. 1.4.7 April 25, 2012
+
+* improve 'html5' recipe to move flash messages into partials for application layouts
+* add 'paperclip' recipe with support for mongoid and cloudfiles (contributed by merlinvn)
+* add 'cloudfiles' recipe (contributed by merlinvn)
+* improve 'extras' recipe to support mongoid for will_paginate (contributed by merlinvn) 
+* improve 'active_admin' recipe to support mongoid (contributed by merlinvn) 
+* improve 'home_page' recipe to allow use of 'slim' recipe (contributed by Guten Ye)
+* improve 'omniauth' recipe to add Tumblr to the strategy list (contributed by monfresh)
+* correct error when using Cucumber and Capybara recipes together (contributed by Alan Oliver)
+* update gem 'mongoid' from 2.4.8 to 2.4.9
+* update gem 'factory_girl_rails' from 3.1.0 to 3.2.0
+* update gem 'rails-backbone' from 0.7.1 to 0.7.2
+* update gem 'omniauth' from 1.0.3 to 1.1.0
+
+h2. 1.4.6 April 11, 2012
+
+* resolve versioning issues
+
+h2. 1.4.5 April 11, 2012
+
+* add option for authorization with CanCan and Rolify
+* add 'will-paginate' option to 'extras' recipe
+* update gem 'mongoid' from 2.4.7 to 2.4.8
+
+h2. 1.4.4 April 3, 2012
+
+* update gem 'factory_girl_rails' from 3.0.0 to 3.1.0
+* update gem 'bson_ext' from 1.6.1 to 1.6.2
+* update 'devise' recipe to use Devise 2.1.0.rc when devise_invitable is selected
+* tweak 'simple_form' recipe
+
+h2. 1.4.3 April 3, 2012
+
+* update 'add_user' and 'omniauth' recipes to fix problem generating rails3-mongoid-omniauth example
+* add 'redis' recipe (contributed by Julián Porta)
+* add 'resque' recipe (contributed by Julián Porta)
+
+h2. 1.4.2 April 2, 2012
+
+* add 'compass_960' recipe (contributed by Julián Porta)
+* update 'compass' recipe (contributed by Julián Porta)
+
+h2. 1.4.1 April 2, 2012
+
+* add 'datamapper' recipe (contributed by Peter Fern)
+* rename 'hoptoad' recipe to 'airbrake' and update (contributed by Peter Fern)
+* update 'extras' recipe to run 'rails-footnotes' generator when selected (contributed by Peter Fern)
+* update 'devise' recipe to use Devise 2.0.4 when devise_invitable is selected (pending fix to devise_invitable)
+* update 'add_user' recipe to support Devise 'confirmable' option for mongoid
+* update 'seed_database' recipe to support mongoid with 'Time.now.utc' instead of 'DateTime.now'
+* update gem 'rails-backbone' from 0.7.0 to 0.7.1
+* update gem 'factory_girl_rails' from 2.0.0.rc to 3.0.0
+* update gem 'mongoid' from 2.4.6 to 2.4.7
+* update gem 'database_cleaner' from 0.7.1 to 0.7.2
+* update gem 'launchy' from 2.0.5 to 2.1.0
+
+h2. 1.4.0 April 2, 2012
+
+* added template command (no longer using 'rake print') (contributed by Keenan Brock)  
+
+h2. 1.3.1 March 15, 2012
+
+* update 'devise' recipe to remove deprecated use of FactoryGirl
+
+h2. 1.3.0 March 15, 2012
+
+* implement and enable support for 'run_after' parameter (contributed by Rico Sta. Cruz) 
+* update 'omniauth' recipe to add 'omniauth-google' gem (contributed by Rico Sta. Cruz)
+* update 'compass' recipe to add 'compass-rails' gem (contributed by Rico Sta. Cruz)
+* update gem 'compass' from 0.12.rc.1 to 0.12.1 (contributed by Rico Sta. Cruz) 
+* fix 'rspec' recipe to add 'factory_girl_rails' to development group (Philippe Van Eerdenbrugghe)
+* add 'active_admin' recipe (contributed by Philippe Van Eerdenbrugghe)
+* update gem 'omniauth' from 1.0.2 to 1.0.3
+* update gem 'bson_ext' from 1.5.2 to 1.6.1
+* update gem 'factory_girl_rails' from 1.7.0 to 2.0.0.rc
+* update gem 'rspec-rails' from 2.8.1 to 2.9.0.rc2
+* update gem 'devise' from 2.0.4 to 2.1.0.rc
+
+h2. 1.2.1 March 11, 2012
+
+* fix 'backbone' recipe
+
+h2. 1.2.0 March 7, 2012
+
+* remove 'navigation' recipe (consolidated with 'html5' recipe)
+
+h2. 1.1.8 March 5, 2012
+
+* improve 'html5' recipe to download files for complex application layout and css for Twitter Bootstrap
+* update gem 'mongoid' from 2.4.4 to 2.4.6
+
+h2. 1.1.7 March 4, 2012
+
+* improve 'home_page' recipe to show how to set a home page for Devise authenticated users
+* improve 'devise' recipe for Devise 'confirmable' option
+* improve 'cleanup' recipe to remove commented lines from config/routes.rb
+* improve 'html5' recipe to allow choice of bootstrap_less or bootstrap_sass (contributed by gmgp)
+* remove 'css_setup' recipe (consolidated with 'html5' recipe)
+* add 'inherited_resources' recipe (contributed by gmgp)
+* add 'simple_form' recipe (contributed by gmgp)
+
 h2. 1.1.6 February 28, 2012
 
 * update 'devise' recipe to accommmodate RSpec and Cucumber for Devise 'confirmable' option
@@ -13,6 +168,7 @@ h2. 1.1.5 February 26, 2012
 * update 'seed_database' recipe to add 'rake db:test:prepare'
 * remove 'add_user_name' recipe (replaced by 'add_user' recipe)
 * update 'cucumber' recipe to run single features without adding "--require features" to the command line
+* add 'slim' recipe (contributed by claudiob)
 
 h2. 1.1.4 February 21, 2012
 

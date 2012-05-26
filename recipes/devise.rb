@@ -6,18 +6,24 @@ case config['devise']
     recipes.delete('devise')
     say_wizard "Devise recipe skipped."
   when 'standard'
-    gem 'devise', '>= 2.0.4'
+    gem 'devise', '>= 2.1.0'
   when 'confirmable'
-    gem 'devise', '>= 2.0.4'
+    gem 'devise', '>= 2.1.0'
     recipes << 'devise-confirmable'
   when 'invitable'
-    gem 'devise', '>= 2.0.4'
-    gem 'devise_invitable', '>= 1.0.0'
+    gem 'devise', '>= 2.1.0'
+    gem 'devise_invitable', '>= 1.0.1'
     recipes << 'devise-confirmable'
     recipes << 'devise-invitable'
   else
     recipes.delete('devise')
     say_wizard "Devise recipe skipped."
+end
+
+if config['authorization']
+  gem 'cancan', '>= 1.6.7'
+  gem 'rolify', '>= 3.1.0'
+  recipes << 'authorization'
 end
 
 if recipes.include? 'devise'
@@ -26,7 +32,7 @@ if recipes.include? 'devise'
     say_wizard "Devise recipe running 'after bundler'"
 
     # Run the Devise generator
-    generate 'devise:install'
+    generate 'devise:install' unless recipes.include? 'datamapper'
     generate 'devise_invitable:install' if recipes.include? 'devise-invitable'
 
     if recipes.include? 'mongo_mapper'
@@ -46,7 +52,16 @@ if recipes.include? 'devise'
       # (see https://github.com/RailsApps/rails3-devise-rspec-cucumber/issues/3)
       gsub_file 'config/initializers/devise.rb', 'config.sign_out_via = :delete', 'config.sign_out_via = Rails.env.test? ? :get : :delete'
     end
-
+    
+    if config['authorization']
+      inject_into_file 'app/controllers/application_controller.rb', :before => 'end' do <<-RUBY
+  rescue_from CanCan::AccessDenied do |exception|
+    redirect_to root_path, :alert => exception.message
+  end
+RUBY
+      end
+    end
+    
   end
 
   after_everything do
@@ -57,8 +72,9 @@ if recipes.include? 'devise'
       say_wizard "Copying RSpec files from the rails3-devise-rspec-cucumber examples"
       begin
         # copy all the RSpec specs files from the rails3-devise-rspec-cucumber example app
-        get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/spec/factories.rb', 'spec/factories.rb'
-        gsub_file 'spec/factories.rb', /# confirmed_at/, "confirmed_at" if recipes.include? 'devise-confirmable'
+        remove_file 'spec/factories/users.rb'
+        get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/spec/factories/users.rb', 'spec/factories/users.rb'
+        gsub_file 'spec/factories/users.rb', /# confirmed_at/, "confirmed_at" if recipes.include? 'devise-confirmable'
         remove_file 'spec/controllers/home_controller_spec.rb'
         remove_file 'spec/controllers/users_controller_spec.rb'
         get 'https://raw.github.com/RailsApps/rails3-devise-rspec-cucumber/master/spec/controllers/home_controller_spec.rb', 'spec/controllers/home_controller_spec.rb'
@@ -75,7 +91,7 @@ if recipes.include? 'devise'
       remove_file 'spec/helpers/home_helper_spec.rb'
       remove_file 'spec/helpers/users_helper_spec.rb'
     end
-
+    
   end
 end
 
@@ -93,3 +109,6 @@ config:
       type: multiple_choice
       prompt: Would you like to use Devise for authentication?
       choices: [["No", no], ["Devise with default modules", standard], ["Devise with Confirmable module", confirmable], ["Devise with Confirmable and Invitable modules", invitable]]
+  - authorization:
+      type: boolean
+      prompt: Would you like to manage authorization with CanCan & Rolify?

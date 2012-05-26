@@ -2,10 +2,10 @@
 # https://github.com/RailsApps/rails_apps_composer/blob/master/recipes/rspec.rb
 
 if config['rspec']
-  gem 'rspec-rails', '>= 2.8.1', :group => [:development, :test]
+  gem 'rspec-rails', '>= 2.10.1', :group => [:development, :test]
   if recipes.include? 'mongoid'
     # use the database_cleaner gem to reset the test database
-    gem 'database_cleaner', '>= 0.7.1', :group => :test
+    gem 'database_cleaner', '>= 0.7.2', :group => :test
     # include RSpec matchers from the mongoid-rspec gem
     gem 'mongoid-rspec', '>= 1.4.4', :group => :test
   end
@@ -13,7 +13,7 @@ if config['rspec']
     gem 'machinist', :group => :test
   end
   if config['factory_girl']
-    gem 'factory_girl_rails', '>= 1.7.0', :group => :test
+    gem 'factory_girl_rails', '>= 3.3.0', :group => [:development, :test]
   end
   # add a collection of RSpec matchers and Cucumber steps to make testing email easy
   gem 'email_spec', '>= 1.2.1', :group => :test
